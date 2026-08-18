@@ -1,0 +1,418 @@
+/* =========================================================
+   Cafe Italia — Custom Styles
+   Ergänzt Tailwind um Design-Tokens, Animationen & Signature-Elemente
+   ========================================================= */
+
+:root {
+  --color-cream: #FFF8F0;
+  --color-cream-deep: #F7EEE0;
+  --color-darkgreen: #264653;
+  --color-darkgreen-deep: #1A323C;
+  --color-terracotta: #E76F51;
+  --color-terracotta-deep: #C9563A;
+  --color-gold: #D4A559;
+  --color-anthracite: #2A2A2A;
+
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Manrope", system-ui, sans-serif;
+
+  --shadow-soft: 0 10px 40px -12px rgba(38, 70, 83, 0.25);
+  --shadow-soft-lg: 0 25px 60px -15px rgba(38, 70, 83, 0.35);
+  --ease-swirl: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html.dark {
+  --color-cream: #1A1613;
+  --color-cream-deep: #14110F;
+  --color-anthracite: #F2EAE0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-cream);
+  color: var(--color-anthracite);
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.font-display { font-family: var(--font-display); }
+
+/* ---------- Scroll progress bar ---------- */
+#scroll-progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--color-terracotta), var(--color-gold));
+  z-index: 100;
+  transition: width 0.1s ease-out;
+}
+
+/* ---------- Sticky Nav ---------- */
+#site-nav {
+  transition: background-color 0.4s ease, box-shadow 0.4s ease, padding 0.3s ease, backdrop-filter 0.4s ease;
+}
+#site-nav.nav-scrolled {
+  background-color: rgba(255, 248, 240, 0.72);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 4px 30px -10px rgba(38, 70, 83, 0.18);
+}
+html.dark #site-nav.nav-scrolled {
+  background-color: rgba(26, 22, 19, 0.72);
+}
+
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -4px;
+  width: 0%;
+  height: 2px;
+  background: var(--color-terracotta);
+  transition: width 0.3s var(--ease-swirl);
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* ---------- Glassmorphism ---------- */
+.glass {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+html.dark .glass {
+  background: rgba(38, 70, 83, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Dunklere Glas-Variante für Text auf hellen/wechselnden Fotos (z. B. Hero) —
+   garantiert Lesbarkeit unabhängig davon, was im Hintergrundfoto liegt. */
+.glass-dark {
+  background: rgba(15, 15, 15, 0.58);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.text-shadow-soft {
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
+}
+
+/* Scrollbar bei wischbaren Bilderleisten optisch ausblenden (Funktion bleibt erhalten) */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Eis-Galerie: wischbare Bilderleiste ---------- */
+/* Bewusst mit eigenem CSS statt Tailwind-Arbitrary-Values umgesetzt,
+   damit Breite/Höhe der Bilder unter keinen Umständen wegfallen können. */
+.eis-strip {
+  display: flex;
+  align-items: stretch;
+  gap: 20px;
+  padding: 0 24px 16px 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+@media (min-width: 640px) {
+  .eis-strip { gap: 32px; padding: 0 64px 16px 64px; }
+}
+
+.eis-card {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  width: 240px;
+  height: 320px;
+  border-radius: 2rem;
+  overflow: hidden;
+  box-shadow: var(--shadow-soft-lg);
+  margin: 0;
+}
+@media (min-width: 640px) {
+  .eis-card { width: 300px; height: 400px; }
+}
+.eis-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.eis-cta {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  width: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+}
+@media (min-width: 640px) {
+  .eis-cta { width: 260px; }
+}
+
+/* ---------- Signature element: Gelato-Scoop Divider ---------- */
+/* Ein wiederkehrender, halbrunder "Kugel"-Schnitt zwischen Sektionen —
+   spielt auf die Eiskugel an, statt eines generischen Wave-SVGs. */
+.scoop-divider {
+  position: relative;
+  height: 64px;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+.scoop-divider svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---------- Hero ---------- */
+.hero-bg {
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20,20,20,0.05) 0%, rgba(20,20,20,0.08) 40%, rgba(20,20,20,0.38) 75%, rgba(20,20,20,0.6) 100%);
+}
+
+.floating-icon {
+  position: absolute;
+  opacity: 0.55;
+  animation: float-icon 7s ease-in-out infinite;
+  filter: drop-shadow(0 8px 12px rgba(0,0,0,0.25));
+}
+@keyframes float-icon {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-22px) rotate(4deg); }
+}
+
+/* ---------- Reveal on scroll ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(36px);
+  transition: opacity 0.8s var(--ease-swirl), transform 0.8s var(--ease-swirl);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-stagger.is-visible > * {
+  animation: stagger-in 0.7s var(--ease-swirl) both;
+}
+.reveal-stagger.is-visible > *:nth-child(1) { animation-delay: 0.05s; }
+.reveal-stagger.is-visible > *:nth-child(2) { animation-delay: 0.15s; }
+.reveal-stagger.is-visible > *:nth-child(3) { animation-delay: 0.25s; }
+.reveal-stagger.is-visible > *:nth-child(4) { animation-delay: 0.35s; }
+.reveal-stagger.is-visible > *:nth-child(5) { animation-delay: 0.45s; }
+.reveal-stagger.is-visible > *:nth-child(6) { animation-delay: 0.55s; }
+.reveal-stagger.is-visible > *:nth-child(7) { animation-delay: 0.65s; }
+.reveal-stagger.is-visible > *:nth-child(8) { animation-delay: 0.75s; }
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Cards ---------- */
+.card-lift {
+  transition: transform 0.45s var(--ease-swirl), box-shadow 0.45s var(--ease-swirl);
+}
+.card-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-soft-lg);
+}
+
+.img-zoom { overflow: hidden; }
+.img-zoom img {
+  transition: transform 0.7s var(--ease-swirl);
+}
+.img-zoom:hover img {
+  transform: scale(1.08);
+}
+
+/* ---------- Buttons with micro-animation + ripple ---------- */
+.btn-ripple {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-ripple .ripple {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgba(255,255,255,0.55);
+  transform: scale(0);
+  animation: ripple-anim 0.65s ease-out;
+  pointer-events: none;
+}
+@keyframes ripple-anim {
+  to { transform: scale(1); opacity: 0; }
+}
+
+.btn-primary {
+  transition: transform 0.3s var(--ease-swirl), box-shadow 0.3s var(--ease-swirl), background-color 0.3s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-soft-lg);
+}
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+
+/* ---------- Stars ---------- */
+.star-anim { display: inline-flex; }
+.star-anim svg {
+  opacity: 0;
+  transform: scale(0.3) rotate(-25deg);
+  animation: star-pop 0.5s var(--ease-swirl) forwards;
+}
+.star-anim.in-view svg:nth-child(1) { animation-delay: 0.05s; }
+.star-anim.in-view svg:nth-child(2) { animation-delay: 0.15s; }
+.star-anim.in-view svg:nth-child(3) { animation-delay: 0.25s; }
+.star-anim.in-view svg:nth-child(4) { animation-delay: 0.35s; }
+.star-anim.in-view svg:nth-child(5) { animation-delay: 0.45s; }
+.star-anim.in-view svg { animation-name: star-pop; }
+@keyframes star-pop {
+  to { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+/* ---------- Masonry Gallery ---------- */
+.masonry {
+  column-count: 1;
+  column-gap: 1.25rem;
+}
+@media (min-width: 640px) { .masonry { column-count: 2; } }
+@media (min-width: 1024px) { .masonry { column-count: 3; } }
+.masonry > * {
+  break-inside: avoid;
+  margin-bottom: 1.25rem;
+}
+
+/* ---------- Lightbox ---------- */
+#lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(20, 17, 15, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+#lightbox.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+#lightbox img {
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 1rem;
+  box-shadow: var(--shadow-soft-lg);
+  transform: scale(0.92);
+  transition: transform 0.35s var(--ease-swirl);
+}
+#lightbox.open img { transform: scale(1); }
+
+/* ---------- FAQ ---------- */
+.faq-item .faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s var(--ease-swirl), padding 0.4s ease;
+}
+.faq-item.open .faq-answer {
+  max-height: 400px;
+}
+.faq-item .faq-icon {
+  transition: transform 0.35s var(--ease-swirl);
+}
+.faq-item.open .faq-icon {
+  transform: rotate(45deg);
+}
+
+/* ---------- Scroll to top ---------- */
+#scroll-top-btn {
+  transition: opacity 0.3s ease, transform 0.3s var(--ease-swirl);
+}
+
+/* ---------- Loading screen ---------- */
+#loader {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--color-cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+#loader.loaded {
+  opacity: 0;
+  visibility: hidden;
+}
+.scoop-loader {
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  border: 6px solid var(--color-cream-deep);
+  border-top-color: var(--color-terracotta);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Focus visibility (a11y) ---------- */
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--color-terracotta);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------- Parallax hero illustration ---------- */
+.parallax-layer {
+  will-change: transform;
+}
+
+/* ---------- Cookie banner ---------- */
+#cookie-banner {
+  transform: translateY(120%);
+  transition: transform 0.5s var(--ease-swirl);
+}
+#cookie-banner.show {
+  transform: translateY(0);
+}
+
+/* ---------- Utility: italian accent pattern ---------- */
+.italian-pattern {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-terracotta) 0px, var(--color-terracotta) 3px,
+    transparent 3px, transparent 14px
+  );
+  opacity: 0.15;
+}
