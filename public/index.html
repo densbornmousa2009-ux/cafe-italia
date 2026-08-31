@@ -595,5 +595,87 @@
 </div>
 
 <script src="js/script.js"></script>
+<div id="ci-bubble" style="position:fixed;bottom:20px;right:20px;width:56px;height:56px;
+  border-radius:50%;background:#173404;color:#EAF3DE;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;font-size:24px;box-shadow:0 2px 10px rgba(0,0,0,0.25);
+  z-index:9999;">💬</div>
+
+<div id="ci-panel" style="display:none;position:fixed;bottom:86px;right:20px;width:300px;
+  max-width:90vw;background:#fff;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.2);
+  overflow:hidden;z-index:9999;font-family:sans-serif;">
+  <div style="background:#173404;color:#EAF3DE;padding:10px 14px;display:flex;
+    justify-content:space-between;align-items:center;">
+    <span style="font-size:14px;font-weight:600;">Cafe Italia Assistent</span>
+    <span id="ci-close" style="cursor:pointer;">✕</span>
+  </div>
+  <div id="ci-log" style="padding:10px;display:flex;flex-direction:column;gap:8px;
+    min-height:120px;max-height:280px;overflow-y:auto;font-size:13px;"></div>
+  <div style="padding:8px;border-top:1px solid #eee;display:flex;gap:6px;">
+    <input id="ci-input" type="text" placeholder="Frag mich etwas..."
+      style="flex:1;padding:6px 8px;border:1px solid #ccc;border-radius:6px;font-size:13px;" />
+    <button id="ci-send" style="padding:6px 12px;border:none;border-radius:6px;
+      background:#173404;color:#EAF3DE;cursor:pointer;">→</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const bubble = document.getElementById("ci-bubble");
+  const panel = document.getElementById("ci-panel");
+  const closeBtn = document.getElementById("ci-close");
+  const log = document.getElementById("ci-log");
+  const input = document.getElementById("ci-input");
+  const sendBtn = document.getElementById("ci-send");
+
+  function toggle() {
+    panel.style.display = panel.style.display === "none" ? "block" : "none";
+  }
+  bubble.addEventListener("click", toggle);
+  closeBtn.addEventListener("click", toggle);
+
+  function addBubbleMsg(text, isUser) {
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.style.justifyContent = isUser ? "flex-end" : "flex-start";
+    const b = document.createElement("div");
+    b.textContent = text;
+    b.style.maxWidth = "80%";
+    b.style.padding = "8px 12px";
+    b.style.borderRadius = "10px";
+    b.style.background = isUser ? "#f0f0f0" : "#EAF3DE";
+    b.style.color = isUser ? "#333" : "#173404";
+    row.appendChild(b);
+    log.appendChild(row);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  async function send() {
+    const text = input.value.trim();
+    if (!text) return;
+    addBubbleMsg(text, true);
+    input.value = "";
+    addBubbleMsg("...", false);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
+      const data = await res.json();
+      log.lastChild.remove(); // "..." entfernen
+      addBubbleMsg(data.reply || data.error || "Fehler bei der Antwort.", false);
+    } catch (e) {
+      log.lastChild.remove();
+      addBubbleMsg("Verbindungsfehler, bitte spaeter nochmal versuchen.", false);
+    }
+  }
+
+  sendBtn.addEventListener("click", send);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") send();
+  });
+})();
+</script>
 </body>
 </html>
